@@ -20,6 +20,7 @@ import java.util.Map;
 
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.service.ServiceAware;
 import io.flutter.embedding.engine.plugins.service.ServicePluginBinding;
 import io.flutter.plugin.common.EventChannel;
@@ -29,11 +30,11 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 /**
  * FlutterBackgroundServicePlugin
  */
-public class FlutterBackgroundServicePlugin implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
+public class FlutterBackgroundServicePlugin implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler, ActivityAware {
     private static final String TAG = "BackgroundServicePlugin";
     private Handler mainHandler;
     private Config config;
@@ -212,5 +213,27 @@ public class FlutterBackgroundServicePlugin implements FlutterPlugin, MethodCall
         synchronized (this){
             eventSinks.remove(arguments);
         }
+    }
+
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        Intent intent = new Intent(context, BackgroundService.class);
+        intent.setAction("STOP_FOREGROUND_ACTION");
+        ContextCompat.startForegroundService(context, intent);
     }
 }

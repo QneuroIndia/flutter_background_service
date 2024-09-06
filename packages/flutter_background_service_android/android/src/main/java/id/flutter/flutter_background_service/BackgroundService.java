@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.flutter.FlutterInjector;
@@ -186,6 +187,11 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && Objects.equals(intent.getAction(), "STOP_FOREGROUND_ACTION")) {
+            isManuallyStopped = true;
+            WatchdogReceiver.remove(this);
+            stopSelf();
+        }
         config.setManuallyStopped(false);
         WatchdogReceiver.enqueue(this);
         runService();
